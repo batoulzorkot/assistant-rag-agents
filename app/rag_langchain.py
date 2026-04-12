@@ -77,12 +77,30 @@ def get_rag_chain(vectorstore):
     )
     return chain
 
-# ─── 5. Réponse avec citations ─────────────────────────────────
+# ─── 5. Réponse avec citations intelligentes ──────────────────
 def ask_rag(question: str, chain) -> str:
     result = chain.invoke({"question": question})
     answer = result["answer"]
     sources = result["source_documents"]
 
+    # Phrases qui indiquent que la question est hors sujet
+    phrases_hors_sujet = [
+        "je ne sais pas",
+        "pas dans le contexte",
+        "pas mentionné",
+        "n'est pas mentionné",
+        "d'après les informations fournies",
+        "le contexte ne",
+        "pas d'information",
+        "je n'ai pas",
+        "aucune information"
+    ]
+
+    # Pas de sources si hors sujet
+    if not sources or any(phrase in answer.lower() for phrase in phrases_hors_sujet):
+        return answer
+
+    # Ajout des citations seulement si pertinent
     citations = "\n\n📚 Sources :\n"
     for i, doc in enumerate(sources):
         source_name = Path(doc.metadata.get("source", "Inconnu")).name
