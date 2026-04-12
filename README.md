@@ -1,5 +1,3 @@
-# assistant-rag-agents
- Assistant intelligent RAG + Agents
 # Assistant Intelligent RAG + Agents
 
 ## Description
