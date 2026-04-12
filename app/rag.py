@@ -3,7 +3,8 @@ import json
 import numpy as np
 from pathlib import Path
 from dotenv import load_dotenv
-from mistralai import Mistral
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
 import faiss
 from langchain_community.document_loaders import PyPDFLoader
 
@@ -14,7 +15,7 @@ DOCS_DIR = Path("docs")
 INDEX_FILE = "faiss.index"
 META_FILE = "faiss.index.meta.json"
 
-client = Mistral(api_key=MISTRAL_API_KEY)
+client = MistralClient(api_key=MISTRAL_API_KEY)
 
 # ─── 1. Lecture des PDFs ───────────────────────────────────────
 def load_texts():
@@ -36,9 +37,9 @@ def load_texts():
 
 # ─── 2. Embeddings ─────────────────────────────────────────────
 def get_embedding(text: str):
-    response = client.embeddings.create(
+    response = client.embeddings(
         model="mistral-embed",
-        inputs=[text]
+        input=[text]
     )
     return response.data[0].embedding
 
@@ -57,7 +58,10 @@ def build_index(texts):
     for i, item in enumerate(texts):
         emb = get_embedding(item["text"])
         embeddings.append(emb)
-        metadata.append({"text": item["text"], "source": item["source"]})
+        metadata.append({
+            "text": item["text"],
+            "source": item["source"]
+        })
         if i % 10 == 0:
             print(f"  {i}/{len(texts)} chunks traités")
 
@@ -82,17 +86,17 @@ def ask(question: str, index, metadata):
             context += metadata[i]["text"] + "\n\n"
             sources.append(metadata[i]["source"])
 
-    response = client.chat.complete(
+    response = client.chat(
         model="mistral-small-latest",
         messages=[
-            {
-                "role": "system",
-                "content": "Tu es un assistant médical. Réponds uniquement en te basant sur le contexte fourni."
-            },
-            {
-                "role": "user",
-                "content": f"Contexte:\n{context}\n\nQuestion: {question}"
-            }
+            ChatMessage(
+                role="system",
+                content="Tu es un assistant médical. Réponds uniquement en te basant sur le contexte fourni."
+            ),
+            ChatMessage(
+                role="user",
+                content=f"Contexte:\n{context}\n\nQuestion: {question}"
+            )
         ]
     )
 
