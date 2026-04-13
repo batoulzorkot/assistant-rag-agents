@@ -1,6 +1,10 @@
+<<<<<<< HEAD
+#!/Users/batoulzorkot/Desktop/assistant-rag-agents/venv/bin/python3.11
+=======
 #!/bin/sh
 '''exec' "/Users/leslietagne/Downloads/Projet GenAI/assistant-rag-agents/venv/bin/python3" "$0" "$@"
 ' '''
+>>>>>>> origin/main
 # -*- coding: utf-8 -*-
 import re
 import sys

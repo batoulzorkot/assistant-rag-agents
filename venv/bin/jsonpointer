@@ -1,5 +1,9 @@
+<<<<<<< HEAD
+#!/Users/batoulzorkot/Desktop/assistant-rag-agents/venv/bin/python3.11
+=======
 #!/Users/leslietagne/Downloads/Projet GenAI/assistant-rag-agents/venv/bin/python3
 # -*- coding: utf-8 -*-
+>>>>>>> origin/main
 
 
 import argparse
