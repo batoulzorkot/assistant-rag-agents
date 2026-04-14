@@ -39,31 +39,58 @@ RAG_KEYWORDS = [
     "hypertension", "tension", "pression artérielle",
     "cholestérol", "cholesterol", "ldl", "hdl", "triglycérides",
     "cardiovasculaire", "traitement", "symptôme", "symptome",
-    "prévention", "prevention", "document", "selon", "obésité"
+    "prévention", "prevention", "obésité", "obese",
+    "document", "selon", "d'après", "oms"
 ]
 
 AGENT_KEYWORDS = [
     "imc", "calories", "calcule", "convertis", "météo", "meteo",
-    "temps", "température", "actualité", "actualite", "récent",
-    "recent", "dernières", "dernieres", "nouvelles", "recherche",
-    "mmol", "mg/dl", "poids", "taille", "kg", "km"
+    "temps qu'il fait", "température extérieure", "actualité",
+    "actualite", "récent", "recent", "dernières", "dernieres",
+    "nouvelles", "recherche web", "mmol", "mg/dl",
+    "poids", "taille", "kg", "cm"
 ]
+
+CONVERSATION_KEYWORDS = [
+    "bonjour", "merci", "comment vas", "résume", "resume",
+    "qu'est-ce que", "c'est quoi", "explique moi", "dis moi",
+    "aide moi", "tu peux", "tu es", "qui es tu", "que fais tu",
+    "depuis le début", "on a dit", "on a parlé", "notre conversation",
+    "conversation précédente", "precedente"
+]
+
+# ─── Chargement historique dans mémoire ───────────────────────
+def load_history_into_memory(history: list):
+    """Charge les conversations passées dans la mémoire LangChain"""
+    for item in history[-5:]:
+        memory.chat_memory.add_user_message(item["question"])
+        memory.chat_memory.add_ai_message(item["response"])
+    print(f"✅ {min(len(history), 5)} conversations chargées en mémoire")
 
 # ─── Routeur intelligent ──────────────────────────────────────
 def router(question: str) -> str:
     question_lower = question.lower()
 
-    # 1 — Question sur les documents → RAG
-    if any(kw in question_lower for kw in RAG_KEYWORDS):
-        print("📚 Routage → RAG")
-        return ask_rag(question, rag_chain)
+    # 0 — Conversation générale → LLM direct en priorité
+    if any(kw in question_lower for kw in CONVERSATION_KEYWORDS):
+        print("💬 Routage → LLM direct")
+        memory.chat_memory.add_user_message(question)
+        response = llm.invoke(question)
+        answer = response.content
+        memory.chat_memory.add_ai_message(answer)
+        return answer
 
-    # 2 — Question pour un outil → Agent
+    # 1 — Outil → Agent
     if any(kw in question_lower for kw in AGENT_KEYWORDS):
         print("🔧 Routage → Agent")
         return ask_agent(question)
 
-    # 3 — Conversation normale → LLM direct
+    # 2 — Documents → RAG
+    if any(kw in question_lower for kw in RAG_KEYWORDS):
+        print("📚 Routage → RAG")
+        return ask_rag(question, rag_chain)
+
+    # 3 — Défaut → LLM direct
     print("💬 Routage → LLM direct")
     memory.chat_memory.add_user_message(question)
     response = llm.invoke(question)
