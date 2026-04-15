@@ -38,7 +38,6 @@ async def start():
     chain = get_rag_chain(vectorstore)
     cl.user_session.set("chain", chain)
 
-    # Charger silencieusement l'historique en mémoire
     if history:
         load_history_into_memory(history)
 
@@ -53,7 +52,6 @@ async def main(message: cl.Message):
     async with cl.Step(name="🔍 Traitement en cours..."):
         response = router(message.content)
 
-    # Sauvegarder dans l'historique
     history.append({
         "question": message.content,
         "response": response
@@ -61,4 +59,8 @@ async def main(message: cl.Message):
     save_history(history)
     cl.user_session.set("history", history)
 
-    await cl.Message(content=response).send()
+    await cl.Message(
+        content=response,
+        # ✅ Disclaimer ajouté sur chaque réponse
+        footer="⚕️ Les LLM peuvent être trompeurs. Consultez toujours un professionnel de santé."
+    ).send()
