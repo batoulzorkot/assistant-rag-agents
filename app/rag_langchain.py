@@ -83,7 +83,6 @@ def ask_rag(question: str, chain) -> str:
     answer = result["answer"]
     sources = result["source_documents"]
 
-    # Phrases qui indiquent que la question est hors sujet
     phrases_hors_sujet = [
         "je ne sais pas",
         "pas dans le contexte",
@@ -96,13 +95,22 @@ def ask_rag(question: str, chain) -> str:
         "aucune information"
     ]
 
-    # Pas de sources si hors sujet
     if not sources or any(phrase in answer.lower() for phrase in phrases_hors_sujet):
         return answer
 
-    # Ajout des citations seulement si pertinent
+    # ✅ Déduplication des sources
+    seen = set()
+    unique_sources = []
+    for doc in sources:
+        source_name = Path(doc.metadata.get("source", "Inconnu")).name
+        page = doc.metadata.get("page", "?")
+        key = f"{source_name}-{page}"
+        if key not in seen:
+            seen.add(key)
+            unique_sources.append(doc)
+
     citations = "\n\n📚 Sources :\n"
-    for i, doc in enumerate(sources):
+    for i, doc in enumerate(unique_sources):
         source_name = Path(doc.metadata.get("source", "Inconnu")).name
         page = doc.metadata.get("page", "?")
         citations += f"  [{i+1}] {source_name} — page {page}\n"
