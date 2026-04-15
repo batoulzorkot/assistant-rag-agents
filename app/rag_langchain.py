@@ -45,6 +45,7 @@ def get_vectorstore(chunks=None):
         api_key=MISTRAL_API_KEY,
         model="mistral-embed"
     )
+    # ✅ Si FAISS existe déjà → chargement instantané
     if Path(FAISS_DIR).exists():
         print("✅ FAISS store chargé depuis le disque")
         return FAISS.load_local(
@@ -52,6 +53,11 @@ def get_vectorstore(chunks=None):
             embeddings,
             allow_dangerous_deserialization=True
         )
+    # ✅ Sinon → création depuis les chunks
+    if chunks is None:
+        print("⚠️ FAISS inexistant, chargement des documents...")
+        docs = load_documents()
+        chunks = split_documents(docs)
     vectorstore = FAISS.from_documents(chunks, embeddings)
     vectorstore.save_local(FAISS_DIR)
     print("✅ FAISS store créé et sauvegardé")
@@ -120,9 +126,7 @@ def ask_rag(question: str, chain) -> str:
 # ─── 6. Boucle CLI de test ─────────────────────────────────────
 if __name__ == "__main__":
     print("🚀 Chargement des documents...")
-    docs = load_documents()
-    chunks = split_documents(docs)
-    vectorstore = get_vectorstore(chunks)
+    vectorstore = get_vectorstore()
     chain = get_rag_chain(vectorstore)
 
     print("\n💬 Assistant médical RAG prêt ! (tape 'exit' pour quitter)\n")

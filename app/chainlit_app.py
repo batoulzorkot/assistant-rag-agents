@@ -31,10 +31,9 @@ async def start():
 
     await cl.Message(content="⏳ Chargement des documents en cours...").send()
 
-    from rag_langchain import load_documents, split_documents, get_vectorstore, get_rag_chain
-    docs = load_documents()
-    chunks = split_documents(docs)
-    vectorstore = get_vectorstore(chunks)
+    from rag_langchain import get_vectorstore, get_rag_chain
+    # ✅ Charge directement depuis le FAISS existant sur disque
+    vectorstore = get_vectorstore()
     chain = get_rag_chain(vectorstore)
     cl.user_session.set("chain", chain)
 
@@ -60,7 +59,5 @@ async def main(message: cl.Message):
     cl.user_session.set("history", history)
 
     await cl.Message(
-        content=response,
-        # ✅ Disclaimer ajouté sur chaque réponse
-        footer="⚕️ Les LLM peuvent être trompeurs. Consultez toujours un professionnel de santé."
+        content=response + "\n\n---\n*⚕️ Les LLM peuvent être trompeurs. Consultez toujours un professionnel de santé.*"
     ).send()

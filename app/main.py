@@ -9,6 +9,7 @@ from langchain_mistralai.chat_models import ChatMistralAI
 from langchain.memory import ConversationBufferMemory
 from rag_langchain import load_documents, split_documents, get_vectorstore, get_rag_chain, ask_rag
 from agents import ask_agent
+from pathlib import Path
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
@@ -23,10 +24,15 @@ memory = ConversationBufferMemory(
     return_messages=True
 )
 
+# ─── Chargement RAG au démarrage ──────────────────────────────
 print("🚀 Chargement du pipeline RAG...")
-docs = load_documents()
-chunks = split_documents(docs)
-vectorstore = get_vectorstore(chunks)
+# ✅ Charge depuis le disque si FAISS existe, sinon recrée
+if Path("faiss_store").exists():
+    vectorstore = get_vectorstore()
+else:
+    docs = load_documents()
+    chunks = split_documents(docs)
+    vectorstore = get_vectorstore(chunks)
 rag_chain = get_rag_chain(vectorstore)
 print("✅ Pipeline RAG prêt !")
 
@@ -68,19 +74,20 @@ SUIVI_PREFIXES = [
     "plus de détail", "dis m'en plus", "approfondis"
 ]
 
+# ─── Chargement historique dans mémoire ───────────────────────
 def load_history_into_memory(history: list):
     for item in history[-5:]:
         memory.chat_memory.add_user_message(item["question"])
         memory.chat_memory.add_ai_message(item["response"])
     print(f"✅ {min(len(history), 5)} conversations chargées en mémoire")
 
+# ─── Routeur intelligent ──────────────────────────────────────
 def router(question: str) -> str:
     question_lower = question.lower().strip()
 
     # 0 — Question de suivi → enrichir avec le dernier sujet RAG
     if any(question_lower.startswith(prefix) for prefix in SUIVI_PREFIXES):
         print("📚 Routage → RAG (question de suivi)")
-        # ✅ Si on a un sujet précédent, on l'ajoute à la question
         if last_rag_topic["question"]:
             enriched = f"{question} (contexte : {last_rag_topic['question']})"
             print(f"🔗 Question enrichie : {enriched}")
@@ -105,7 +112,6 @@ def router(question: str) -> str:
     # 3 — Documents → RAG
     if any(kw in question_lower for kw in RAG_KEYWORDS):
         print("📚 Routage → RAG")
-        # ✅ Mémoriser le sujet
         last_rag_topic["question"] = question
         return ask_rag(question, rag_chain)
 
@@ -118,6 +124,7 @@ def router(question: str) -> str:
     return answer
 
 
+# ─── Boucle CLI de test ───────────────────────────────────────
 if __name__ == "__main__":
     print("\n💬 Assistant médical complet prêt ! (tape 'exit' pour quitter)\n")
     while True:

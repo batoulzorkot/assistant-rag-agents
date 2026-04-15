@@ -214,5 +214,49 @@
   {
     "question": "Bonjour ! Tu es qui ?",
     "response": "Bonjour ! 😊 Je suis un grand modèle de langage créé par Mistral AI. Je suis là pour t'aider avec tes questions, te donner des informations ou simplement discuter. Comment puis-je t'aider aujourd'hui ?"
+  },
+  {
+    "question": "Quels sont les symptômes du diabète ?",
+    "response": "Voici les principaux symptômes du diabète mentionnés dans les contextes fournis :\n\n1. **Polyurie** : excrétion excessive d'urine (à ne pas confondre avec la pollakiurie, qui est une émission fréquente de petites quantités d'urine).\n2. **Polydipsie** : sensation de soif intense.\n3. **Polyphagie** : faim constante, malgré une perte de poids.\n4. **Amaigrissement** : perte de poids significative et chiffrée (en fonction du temps).\n5. **Asthénie** : fatigue ou faiblesse générale.\n\nCes symptômes peuvent survenir brutalement, surtout dans le cas du **diabète de type 1**. Dans le cas du **diabète de type 2**, les symptômes peuvent être plus discrets ou absents au début.\n\nSi ces symptômes apparaissent, il est important de consulter un professionnel de santé pour un diagnostic et une prise en charge adaptée.\n\n📚 Sources :\n  [1] Prise en charge du diabète (OMS Méditerranée).pdf — page 2\n  [2]  Prévention facteurs de risque cardiovasculaires.pdf — page 10\n"
+  },
+  {
+    "question": "bonjour, qui es tu?",
+    "response": "Bonjour ! 😊 Je suis une intelligence artificielle conçue pour t'aider, t'informer et discuter avec toi. Je peux répondre à tes questions, t'expliquer des concepts, t'aider à résoudre des problèmes ou simplement échanger sur divers sujets. N'hésite pas à me dire ce dont tu as besoin ! 🚀\n\nEt toi, comment puis-je t'aider aujourd'hui ? 😊"
+  },
+  {
+    "question": "Quels sont les symptômes du diabète ?",
+    "response": "Voici les principaux symptômes du diabète, selon les informations fournies :\n\n### **Diabète de type 1** (symptômes souvent brutaux) :\n- **Excrétion excessive d’urine** (polyurie)\n- **Sensation de soif intense** (polydipsie)\n- **Faim constante** (polyphagie)\n- **Perte de poids inexpliquée**\n\n### **Diabète de type 2** (symptômes parfois moins marqués) :\n- Les mêmes symptômes que le diabète de type 1 peuvent apparaître, mais ils sont souvent moins prononcés.\n- **Fatigue**\n- **Altération de la vision**\n- **Cicatrisation lente des plaies**\n- **Infections fréquentes** (cutanées, urinaires, etc.)\n\nSi ces symptômes apparaissent, il est important de consulter un médecin pour un diagnostic et une prise en charge adaptée.\n\n📚 Sources :\n  [1] Prise en charge du diabète (OMS Méditerranée).pdf — page 2\n"
+  },
+  {
+    "question": "chainlit run app/chainlit_app.py",
+    "response": "The command `chainlit run app/chainlit_app.py` is used to start a Chainlit application. Here's a breakdown of what it does:\n\n### **What it does:**\n1. **`chainlit run`**: This is the command to execute a Chainlit application.\n2. **`app/chainlit_app.py`**: The path to your Chainlit application file (Python script).\n\n### **How it works:**\n- Chainlit will:\n  - Load your app (`chainlit_app.py`).\n  - Start a local web server (default: `http://localhost:8000`).\n  - Open a browser window (if enabled) to interact with your app.\n\n### **Common Options:**\n| Option | Description |\n|--------|-------------|\n| `--port` | Change the port (e.g., `--port 8080`) |\n| `--headless` | Disable auto-opening the browser |\n| `--debug` | Enable debug mode (shows logs) |\n| `--concurrency` | Set the number of workers (for async apps) |\n\n### **Example with Options:**\n```bash\nchainlit run app/chainlit_app.py --port 8501 --headless\n```\n\n### **Troubleshooting:**\n- If you get `ModuleNotFoundError`, ensure Chainlit is installed (`pip install chainlit`).\n- If the app doesn't load, check for syntax errors in `chainlit_app.py`.\n\nWould you like help structuring your `chainlit_app.py` file?"
+  },
+  {
+    "question": "Bonjour !",
+    "response": "Bonjour ! 😊 Comment puis-je vous aider aujourd'hui ?"
+  },
+  {
+    "question": "Bonjour !",
+    "response": "Bonjour ! 😊 Comment puis-je vous aider aujourd'hui ?"
+  },
+  {
+    "question": "Quels sont les symptômes du diabète ?",
+    "response": "Les symptômes principaux du diabète, notamment du **diabète de type 1**, incluent :\n\n- **Polyurie** (émission excessive d'urine)\n- **Polydipsie** (sensation de soif intense)\n- **Polyphagie** (faim constante)\n- **Amaigrissement** (perte de poids inexpliquée)\n- **Asthénie** (fatigue intense)\n\nCes symptômes peuvent apparaître brutalement, surtout dans le cas du diabète de type 1.\n\nSi vous suspectez un diabète, il est important de consulter un professionnel de santé pour un diagnostic et une prise en charge adaptée.\n\n📚 Sources :\n  [1] Prise en charge du diabète (OMS Méditerranée).pdf — page 2\n  [2]  Prévention facteurs de risque cardiovasculaires.pdf — page 10\n"
+  },
+  {
+    "question": "Et quelles sont les causes ?",
+    "response": "D'après les informations fournies, le diabète est principalement causé par :\n\n1. **Une production insuffisante d'insuline** par l'organisme.\n2. **Une mauvaise utilisation de l'insuline** par l'organisme (résistance à l'insuline).\n\nLes facteurs de risque qui contribuent à l'augmentation du diabète incluent :\n- **Mauvaise alimentation**\n- **Sédentarité** (manque d'activité physique)\n- **Tabagisme**\n- **Usage nocif de l'alcool**\n\nCes facteurs de risque sont liés à des modes de vie qui favorisent le développement du diabète."
+  },
+  {
+    "question": "Calcule mon IMC : je pèse 70kg et je mesure 1m65",
+    "response": "⚠️ Une erreur s'est produite : Error response 503 while fetching https://api.mistral.ai/v1/chat/completions: {\"object\":\"error\",\"message\":\"Internal server error\",\"type\":\"unreachable_backend\",\"param\":null,\"code\":\"1100\",\"raw_status_code\":503}\nVeuillez reformuler ou réessayer."
+  },
+  {
+    "question": "Quelle est la météo à Paris ?",
+    "response": "Voici les informations météorologiques actuelles à Paris :\n\n🌍 **Météo à Paris :**\n- **Conditions** : Ciel dégagé\n- **Température** : 15,47°C (ressenti 15,11°C)\n- **Humidité** : 78%\n- **Pression** : 1021 hPa\n- **Vent** : 4,63 m/s\n\n💊 **Impact médical** :\nLes conditions actuelles à Paris ne présentent pas de risque particulier pour les personnes souffrant de diabète, d'hypertension ou de problèmes cardiovasculaires. Cependant, l'humidité élevée (78%) pourrait légèrement influencer la tension artérielle chez certaines personnes sensibles. Il est toujours recommandé de surveiller votre état de santé et de consulter votre médecin en cas de doute.\n\nN'hésitez pas si vous avez d'autres questions sur votre santé ou votre bien-être !"
+  },
+  {
+    "question": "Calcule mon IMC : je pèse 70kg et je mesure 1m65",
+    "response": "⚠️ Une erreur s'est produite : Error response 503 while fetching https://api.mistral.ai/v1/chat/completions: {\"object\":\"error\",\"message\":\"Internal server error\",\"type\":\"unreachable_backend\",\"param\":null,\"code\":\"1100\",\"raw_status_code\":503}\nVeuillez reformuler ou réessayer."
   }
 ]
