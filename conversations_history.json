@@ -258,5 +258,73 @@
   {
     "question": "Calcule mon IMC : je pèse 70kg et je mesure 1m65",
     "response": "⚠️ Une erreur s'est produite : Error response 503 while fetching https://api.mistral.ai/v1/chat/completions: {\"object\":\"error\",\"message\":\"Internal server error\",\"type\":\"unreachable_backend\",\"param\":null,\"code\":\"1100\",\"raw_status_code\":503}\nVeuillez reformuler ou réessayer."
+  },
+  {
+    "question": "Bonjour ! Tu es qui ?",
+    "response": "Bonjour ! 😊 Je suis une intelligence artificielle conçue pour t'aider, t'informer et discuter avec toi. Tu peux me poser des questions, demander des conseils, ou simplement papoter. Comment puis-je t'aider aujourd'hui ? 🚀"
+  },
+  {
+    "question": "Quels sont les différents type de diabète ?",
+    "response": "D'après les informations fournies, il existe principalement deux types de diabète :\n\n1. **Diabète de type 1** : Il apparaît lorsque l’organisme ne produit **pas suffisamment d’insuline** (hormone régulant la glycémie). Ce type est moins fréquent et nécessite généralement des injections d’insuline.\n\n2. **Diabète de type 2** : Il résulte d’une **mauvaise utilisation de l’insuline par l’organisme** (insulinorésistance). Il représente **90 % des cas de diabète** dans le monde et est souvent lié à des facteurs comme l’alimentation, le mode de vie ou l’hérédité.\n\n*(Note : D’autres formes existent, comme le diabète gestationnel, mais elles ne sont pas mentionnées dans le contexte fourni.)*"
+  },
+  {
+    "question": "Quels sont les symptômes du diabète type 1 ?",
+    "response": "Les symptômes du diabète de type 1 incluent :\n\n- Émission excessive d'urine (polyurie)\n- Soif intense (polydipsie)\n- Faim constante\n- Perte de poids\n- Altération de la vision\n- Fatigue\n\nCes symptômes peuvent survenir brutalement.\n\n📚 Sources :\n  [1] Rapport mondial sur le diabète (OMS).pdf — page 10\n  [2] Prise en charge du diabète (OMS Méditerranée).pdf — page 2\n"
+  },
+  {
+    "question": "Et quelles sont les causes ?",
+    "response": "D'après les informations fournies, **la cause du diabète de type 1 n'est pas connue** et il n'est actuellement **pas possible de le prévenir**.\n\nLes autres détails mentionnés concernent principalement ses conséquences (nécessité d'insuline quotidienne pour réguler la glycémie) et ses symptômes (soif excessive, émission d'urine fréquente, faim, etc.), mais pas les causes.\n\nSi vous souhaitez des informations plus précises ou des recherches récentes, je vous recommande de consulter des sources médicales fiables."
+  },
+  {
+    "question": "Et quels sont les traitements ?",
+    "response": "Le traitement principal du diabète de type 1 consiste en une **administration quotidienne d'insuline**, car l'organisme ne produit pas suffisamment d'insuline pour réguler la glycémie. Sans cette insulinothérapie, la survie des personnes atteintes est compromise.\n\nIl n'existe actuellement **aucun autre traitement** pour remplacer l'insuline dans le diabète de type 1, et il n'est pas possible de le prévenir. Les symptômes (comme une soif excessive, une émission d'urine fréquente, etc.) sont gérés grâce à cette insulinothérapie.\n\nSi vous souhaitez des détails sur les méthodes d'administration (injections, pompe à insuline, etc.), je peux compléter la réponse.\n\n📚 Sources :\n  [1] Rapport mondial sur le diabète (OMS).pdf — page 10\n  [2] Rapport mondial sur le diabète (OMS).pdf — page 5\n"
+  },
+  {
+    "question": "Comment prévenir l'hypertension ?",
+    "response": "Voici les principales méthodes pour prévenir l'hypertension (HTA) selon les conseils donnés :\n\n### **1. Mesures hygiéno-diététiques :**\n- **Réduire la consommation de sel** (moins de 5 g/jour), en évitant le sel caché (pain, charcuteries, poissons séchés ou fumés, etc.).\n- **Arrêter le tabac** (immédiatement et impérativement).\n- **Pratiquer une activité physique quotidienne**.\n- **Maintenir un poids santé** (perdre du poids si surpoids ou obésité, car une perte de 5 kg peut réduire la tension systolique de 2 à 10 mm Hg).\n- **Limiter la consommation d’alcool**.\n\n### **2. Réduire le stress et favoriser la relaxation :**\n- **Méditation** et **techniques de relaxation** (respiration profonde, yoga, etc.).\n\n### **3. Changements d’habitudes alimentaires :**\n- **Augmenter la consommation de fruits et légumes**.\n- **Réduire les graisses saturées et les acides gras trans**.\n- **Éviter les excès de caféine** (si sensible).\n\n### **4. Sensibilisation et dépistage :**\n- **Mesurer régulièrement sa tension artérielle**.\n- **Suivre les conseils des médecins et professionnels de santé**.\n- **S’informer sur les causes, conséquences et prévention de l’HTA**.\n\nSi vous avez besoin de précisions sur l’une de ces méthodes, n’hésitez pas à demander !\n\n📚 Sources :\n  [1]  Prévention facteurs de risque cardiovasculaires.pdf — page 19\n  [2] Fiche hypertension OMS.pdf — page 5\n  [3] Fiche hypertension OMS.pdf — page 3\n"
+  },
+  {
+    "question": "Et quels sont les symptômes ?",
+    "response": "D'après le contexte fourni, les symptômes de l'hypertension apparaissent rarement, mais lorsqu'ils sont présents, ils peuvent prendre la forme de :\n\n- Maux de tête\n- Souffle court\n- Vertiges\n- Douleurs à la poitrine\n- Palpitations\n- Saignements de nez\n\nCependant, il est important de noter que l'hypertension est souvent appelée un \"tueur silencieux\" car elle ne présente généralement pas de symptômes, ce qui peut retarder le diagnostic et entraîner des complications graves comme une crise cardiaque.\n\n📚 Sources :\n  [1] Fiche hypertension OMS.pdf — page 2\n  [2] Fiche hypertension OMS.pdf — page 0\n"
+  },
+  {
+    "question": "Quels sont les risques du cholestérol élevé ?",
+    "response": "D'après les informations fournies, un taux de cholestérol élevé (hypercholestérolémie totale ≥ 2 g/l) est associé à plusieurs risques, notamment :\n\n1. **Risque cardiovasculaire (CV) accru** :\n   - Le contexte mentionne que les troubles du profil lipidique (dont l'hypercholestérolémie) sont des facteurs de risque majeurs pour les maladies cardiovasculaires.\n   - Les risques sont classés en fonction du risque absolu à 10 ans :\n     - **Risque de maladie CV à 10 ans** :\n       - < 15 % (faible)\n       - 15–20 % (modéré)\n       - 20–30 % (élevé)\n       - > 30 % (très élevé)\n     - **Risque absolu de décès CV à 10 ans** :\n       - < 4 % (faible)\n       - 4–5 % (modéré)\n       - 5–8 % (élevé)\n       - > 8 % (très élevé).\n\n2. **Facteurs aggravants** :\n   - Un taux de cholestérol élevé peut être aggravé par d'autres facteurs comme l'hérédité, l'hypertension artérielle (HTA), l'obésité centrale, ou le diabète, ce qui augmente encore le risque cardiovasculaire.\n\n3. **Autres risques** :\n   - Bien que non explicitement détaillés dans le contexte, un taux de cholestérol élevé est aussi associé à un risque accru d'athérosclérose, d'infarctus du myocarde, d'accident vasculaire cérébral (AVC), et d'autres complications vasculaires.\n\nEn résumé, un taux de cholestérol élevé augmente significativement le risque de maladies cardiovasculaires, avec une gravité qui dépend d'autres facteurs de risque associés."
+  },
+  {
+    "question": "Convertis une glycémie de 7.2 mmol/L en mg/dL",
+    "response": "⚠️ Une erreur s'est produite : Got unsupported early_stopping_method `generate`\nVeuillez reformuler ou réessayer."
+  },
+  {
+    "question": "Quelle est la météo à Paris ?",
+    "response": "Voici les informations météorologiques actuelles à Paris :\n\n🌍 **Météo à Paris :**\n- **Conditions** : Ciel dégagé\n- **Température** : 15,47°C (ressenti 15,11°C)\n- **Humidité** : 78%\n- **Pression** : 1021 hPa\n- **Vent** : 4,63 m/s\n\n💊 **Impact médical** :\nLes conditions actuelles à Paris ne présentent pas de risque particulier pour les personnes souffrant de diabète, d'hypertension ou de problèmes cardiovasculaires. Cependant, l'humidité élevée (78%) pourrait légèrement influencer la tension artérielle chez certaines personnes sensibles. Il est toujours recommandé de surveiller votre état de santé et de consulter votre médecin en cas de doute.\n\nN'hésitez pas si vous avez d'autres questions sur votre santé ou votre bien-être !"
+  },
+  {
+    "question": "Quelles sont les dernières recommandations OMS sur le diabète ?",
+    "response": "Voici les dernières recommandations de l'OMS sur le diabète, mises à jour en 2024 :\n\n📌 **Principaux axes des recommandations OMS 2024 pour le diabète de type 2** :\n1. **Éducation et motivation des patients** :\n   - Le traitement doit être centré sur le patient, avec une approche personnalisée.\n   - La motivation et l'implication active du patient dans sa prise en charge sont essentielles.\n   - L'OMS souligne que *\"le meilleur traitement pour une personne atteinte de diabète de type 2 est la motivation ; il faut se mettre à sa place\"* (source : OMS Europe).\n\n2. **Prise en charge clinique améliorée** :\n   - Les nouvelles lignes directrices proposent une feuille de route pour prévenir les complications et améliorer la qualité de vie.\n   - Intégration des travaux récents de la HAS (Haute Autorité de Santé) pour les recommandations de bonne pratique (RBP 2024).\n\n3. **Focus sur le diabète gestationnel** :\n   - L'OMS a publié des directives spécifiques pour le diabète pendant la grossesse, soulignant l'importance d'une détection précoce et d'une prise en charge adaptée.\n\n🔗 **Sources officielles** :\n- [Lignes directrices mondiales OMS sur le diabète (2024)](https://www.who.int/fr/news/item/14-11-2025-who-launches-global-guidelines-on-diabetes-during-pregnancy-on-world-diabetes-day)\n- [Recommandations HAS 2024 sur le diabète de type 2](https://www.has-sante.fr/jcms/p_3520364/fr/strategie-therapeutique-du-patient-vivant-avec-un-diabete-de-type-2-recommandations)\n\n⚠️ **Rappel important** :\nCes informations sont à titre éducatif. Pour une prise en charge adaptée à votre situation, consultez toujours un professionnel de santé (médecin, diabétologue ou équipe soignante).\n\nN'hésitez pas si vous souhaitez des précisions sur un aspect spécifique de ces recommandations !"
+  },
+  {
+    "question": "Bonjour ! Tu es qui ?",
+    "response": "Bonjour ! 😊 Je suis un grand modèle de langage créé par Mistral AI. Je suis là pour t'aider avec toutes sortes de questions, que ce soit pour des conseils, des explications, des idées créatives ou simplement discuter. Comment puis-je t'aider aujourd'hui ?"
+  },
+  {
+    "question": "Quels sont les symptômes du diabète ?",
+    "response": "Les symptômes du diabète incluent principalement :\n\n- **Polyurie** (émission excessive d'urine, à ne pas confondre avec la pollakiurie, qui est une émission fréquente de petites quantités d'urine),\n- **Polydipsie** (sensation de soif intense),\n- **Polyphagie** (faim constante), souvent accompagnée d'un amaigrissement,\n- **Amaigrissement** (perte de poids mesurable dans le temps),\n- **Asthénie** (fatigue intense).\n\nCes symptômes peuvent être des signes cardinaux du diabète, surtout s'ils s'accompagnent d'antécédents familiaux ou d'autres facteurs de risque.\n\n📚 Sources :\n  [1] Prise en charge du diabète (OMS Méditerranée).pdf — page 2\n  [2]  Prévention facteurs de risque cardiovasculaires.pdf — page 10\n"
+  },
+  {
+    "question": "Et quelles sont les causes ?",
+    "response": "D'après les informations fournies, le diabète est principalement causé par :\n\n1. **Une production insuffisante d'insuline** par l'organisme.\n2. **Une mauvaise utilisation de l'insuline** produite par le corps (résistance à l'insuline).\n\nLes facteurs de risque qui contribuent à l'augmentation du diabète incluent :\n- **Mauvaise alimentation**\n- **Sédentarité** (manque d'activité physique)\n- **Tabagisme**\n- **Usage nocif de l'alcool**\n\nCes facteurs sont liés à des modes de vie qui favorisent le développement du diabète."
+  },
+  {
+    "question": "Calcule mon IMC : je pèse 70kg et je mesure 1m65",
+    "response": "Votre IMC est de **25,7 kg/m²**, ce qui vous place dans la catégorie **\"surpoids\"** selon l'OMS (25 – 29,9).\n\n⚠️ **Attention** : Un IMC élevé est un facteur de risque pour le diabète de type 2 et l'hypertension. Il est recommandé d'en parler à votre médecin ou à un nutritionniste pour un suivi personnalisé.\n\nN'hésitez pas si vous souhaitez des conseils pour améliorer votre alimentation ou votre activité physique ! 😊"
+  },
+  {
+    "question": "Quels sont les points commun entre diabete et hypertension?",
+    "response": "D'après les éléments fournis, voici les principaux points communs entre le diabète et l'hypertension (HTA) :\n\n1. **Lien multifactoriel et interactif** :\n   - Les deux conditions sont étroitement liées par des mécanismes complexes et réciproques.\n\n2. **Risque cardiovasculaire élevé** :\n   - L'association diabète + HTA multiplie le risque de complications micro et macroangiopathiques (AVC, infarctus du myocarde, rétinopathie, néphropathie).\n   - Dès le stade de \"TA normale haute\" (>130-139/80-89 mmHg), le risque est déjà significatif.\n\n3. **Impact sur la mortalité et les complications** :\n   - 35 à 75 % des complications chez les diabétiques sont attribuées à l'HTA.\n   - Le traitement de l'HTA chez les diabétiques réduit la mortalité totale, les AVC, les infarctus, et protège les reins (effet néphroprotecteur).\n\n4. **Mécanismes physiopathologiques communs** :\n   - **Vasoconstriction** (artériolaire et capillaire musculaire) → réduit l'apport d'insuline et de glucose aux muscles, favorisant l'hyperinsulinisme.\n   - L'HTA peut aggraver la résistance à l'insuline, et inversement, le diabète de type 2 peut favoriser l'HTA.\n\n5. **Prévalence accrue** :\n   - L'HTA est environ **2 fois plus fréquente** chez les diabétiques que dans la population générale.\n\n6. **Recommandations thérapeutiques communes** :\n   - Un contrôle strict de la glycémie **et** de la pression artérielle est essentiel pour prévenir les complications.\n\nEn résumé, ces deux pathologies partagent des mécanismes physiopathologiques, un risque cardiovasculaire synergique, et nécessitent une prise en charge globale et précoce.\n\n📚 Sources :\n  [1] GUIDE DE BONNES PRATIQUES EN DIABÉTOLOGIE.pdf — page 72\n  [2]  Guide hypertension artérielle adulte.pdf — page 28\n"
+  },
+  {
+    "question": "Merci pour ton aide !",
+    "response": "Avec plaisir ! 😊 N'hésite pas si tu as d'autres questions ou besoin d'aide supplémentaire. Bonne journée ! 🌟"
   }
 ]

@@ -431,7 +431,7 @@ agent_executor = AgentExecutor(
     max_iterations=10,
     max_execution_time=30,
     return_intermediate_steps=False,
-    early_stopping_method="generate",
+    # ✅ early_stopping_method supprimé — non supporté par cette version
 )
 
 # ---------------------------------------------------------------------------
@@ -449,9 +449,8 @@ def ask_agent(question: str) -> str:
             return result.get("output", "Je n'ai pas pu générer de réponse.")
         except Exception as e:
             error_str = str(e)
-            # ✅ Rate limit → attendre et réessayer
             if "429" in error_str or "rate_limited" in error_str:
-                wait_time = (attempt + 1) * 5  # 5s, 10s, 15s
+                wait_time = (attempt + 1) * 5
                 print(f"⏳ Rate limit atteint, attente {wait_time}s...")
                 time.sleep(wait_time)
                 continue
