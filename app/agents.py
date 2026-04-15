@@ -12,8 +12,7 @@ Fonction principale : ask_agent(question: str) -> str
 """
 
 import os
-import math
-
+import time
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -29,7 +28,7 @@ import requests
 # ---------------------------------------------------------------------------
 
 llm = ChatMistralAI(
-    model="mistral-large-latest",
+    model="mistral-small-latest",
     mistral_api_key=os.environ.get("MISTRAL_API_KEY"),
     temperature=0.2,
 )
@@ -48,31 +47,11 @@ memory = ConversationBufferMemory(
 # ---------------------------------------------------------------------------
 
 def calculatrice_medicale(query: str) -> str:
-    """
-    Effectue des calculs médicaux courants liés au diabète, à l'hypertension
-    et au cholestérol.
-
-    Commandes reconnues (les paramètres sont séparés par des virgules) :
-      imc <poids_kg>, <taille_m>
-          → calcule l'IMC et sa catégorie OMS
-      glycemie_mmol <valeur_mmol>
-          → convertit mmol/L → mg/dL
-      glycemie_mg <valeur_mg>
-          → convertit mg/dL → mmol/L
-      calories <proteines_g>, <glucides_g>, <lipides_g>
-          → estime les calories totales
-      cholesterol_mmol <valeur_mmol>
-          → convertit mmol/L → mg/dL (cholestérol)
-      cholesterol_mg <valeur_mg>
-          → convertit mg/dL → mmol/L (cholestérol)
-    """
     query = query.strip().lower()
     parts = [p.strip() for p in query.split(",")]
 
     try:
-        # ── IMC ──────────────────────────────────────────────────────────────
         if parts[0].startswith("imc"):
-            # Ex. : "imc 75, 1.75"
             tokens = parts[0].split()
             poids = float(tokens[1]) if len(tokens) > 1 else float(parts[1])
             taille = float(parts[1]) if len(tokens) > 1 else float(parts[2])
@@ -101,13 +80,11 @@ def calculatrice_medicale(query: str) -> str:
                 f"(Poids : {poids} kg, Taille : {taille} m)"
             )
 
-        # ── Glycémie mmol/L → mg/dL ──────────────────────────────────────────
         elif parts[0].startswith("glycemie_mmol"):
             tokens = parts[0].split()
             val = float(tokens[1]) if len(tokens) > 1 else float(parts[1])
             mg = val * 18.0182
 
-            etat = ""
             if val < 3.9:
                 etat = "⚠️ Hypoglycémie"
             elif val <= 5.5:
@@ -122,13 +99,11 @@ def calculatrice_medicale(query: str) -> str:
                 f"Interprétation : {etat}"
             )
 
-        # ── Glycémie mg/dL → mmol/L ──────────────────────────────────────────
         elif parts[0].startswith("glycemie_mg"):
             tokens = parts[0].split()
             val = float(tokens[1]) if len(tokens) > 1 else float(parts[1])
             mmol = val / 18.0182
 
-            etat = ""
             if mmol < 3.9:
                 etat = "⚠️ Hypoglycémie"
             elif mmol <= 5.5:
@@ -143,7 +118,6 @@ def calculatrice_medicale(query: str) -> str:
                 f"Interprétation : {etat}"
             )
 
-        # ── Calories ─────────────────────────────────────────────────────────
         elif parts[0].startswith("calories"):
             tokens = parts[0].split()
             proteines = float(tokens[1]) if len(tokens) > 1 else float(parts[1])
@@ -159,13 +133,11 @@ def calculatrice_medicale(query: str) -> str:
                 "Conseil : Un suivi calorique aide à gérer le diabète et le poids."
             )
 
-        # ── Cholestérol mmol/L → mg/dL ───────────────────────────────────────
         elif parts[0].startswith("cholesterol_mmol"):
             tokens = parts[0].split()
             val = float(tokens[1]) if len(tokens) > 1 else float(parts[1])
             mg = val * 38.67
 
-            etat = ""
             if val < 5.2:
                 etat = "✅ Cholestérol total normal (< 5.2 mmol/L)"
             elif val < 6.2:
@@ -178,13 +150,11 @@ def calculatrice_medicale(query: str) -> str:
                 f"Interprétation : {etat}"
             )
 
-        # ── Cholestérol mg/dL → mmol/L ───────────────────────────────────────
         elif parts[0].startswith("cholesterol_mg"):
             tokens = parts[0].split()
             val = float(tokens[1]) if len(tokens) > 1 else float(parts[1])
             mmol = val / 38.67
 
-            etat = ""
             if mmol < 5.2:
                 etat = "✅ Cholestérol total normal (< 5.2 mmol/L)"
             elif mmol < 6.2:
@@ -215,10 +185,6 @@ def calculatrice_medicale(query: str) -> str:
 # ---------------------------------------------------------------------------
 
 def get_weather(city: str) -> str:
-    """
-    Récupère la météo actuelle via OpenWeatherMap et l'interprète
-    dans un contexte médical (impact sur la tension artérielle).
-    """
     api_key = os.environ.get("OPENWEATHERMAP_API_KEY")
     if not api_key:
         return (
@@ -247,9 +213,7 @@ def get_weather(city: str) -> str:
         description = data["weather"][0]["description"].capitalize()
         wind_speed = data["wind"]["speed"]
 
-        # ── Conseils médicaux contextuels ────────────────────────────────────
         conseils = []
-
         if temp <= 5:
             conseils.append(
                 "🌡️ Froid intense : le froid provoque une vasoconstriction qui peut "
@@ -260,13 +224,11 @@ def get_weather(city: str) -> str:
                 "☀️ Chaleur élevée : la déshydratation et la chaleur peuvent affecter "
                 "la glycémie et la pression artérielle. Hydratez-vous régulièrement."
             )
-
         if humidity >= 80:
             conseils.append(
                 "💧 Humidité élevée : peut amplifier la sensation de chaleur et "
                 "augmenter le risque de déshydratation chez les diabétiques."
             )
-
         if pressure < 1000:
             conseils.append(
                 "🌀 Pression atmosphérique basse : certains patients hypertendus "
@@ -298,10 +260,6 @@ def get_weather(city: str) -> str:
 # ---------------------------------------------------------------------------
 
 def recherche_web_medicale(query: str) -> str:
-    """
-    Recherche des actualités médicales récentes sur le diabète,
-    l'hypertension et le cholestérol via l'API Tavily.
-    """
     api_key = os.environ.get("TAVILY_API_KEY")
     if not api_key:
         return (
@@ -309,7 +267,6 @@ def recherche_web_medicale(query: str) -> str:
             "Ajoutez TAVILY_API_KEY dans vos variables d'environnement."
         )
 
-    # Enrichir la requête avec le contexte médical si nécessaire
     medical_keywords = ["diabète", "diabetes", "hypertension", "cholestérol",
                         "cholesterol", "glycémie", "tension", "cardiovasculaire"]
     query_lower = query.lower()
@@ -327,7 +284,7 @@ def recherche_web_medicale(query: str) -> str:
         "include_domains": [
             "who.int", "has-sante.fr", "ameli.fr",
             "pubmed.ncbi.nlm.nih.gov", "ncbi.nlm.nih.gov",
-            "lemonde.fr", "lequipe.fr", "sante.fr",
+            "lemonde.fr", "sante.fr",
         ],
     }
 
@@ -338,11 +295,9 @@ def recherche_web_medicale(query: str) -> str:
 
         output_parts = [f"🔍 Résultats pour : « {query} »\n"]
 
-        # Réponse synthétique de Tavily (si disponible)
         if data.get("answer"):
             output_parts.append(f"📝 Synthèse :\n{data['answer']}\n")
 
-        # Résultats individuels
         results = data.get("results", [])
         if results:
             output_parts.append("📰 Sources récentes :")
@@ -434,12 +389,16 @@ Quand tu as suffisamment d'informations pour répondre :
 Thought: Je connais maintenant la réponse finale.
 Final Answer: [ta réponse complète et bienveillante en français]
 
-Règles importantes :
+Règles IMPORTANTES :
 - Réponds toujours en français
 - Adopte un ton professionnel mais bienveillant
 - Rappelle toujours de consulter un médecin pour tout diagnostic
 - Utilise les outils pertinents selon la question
-- Si aucun outil n'est nécessaire, réponds directement
+- Si tu as la réponse sans avoir besoin d'un outil, écris DIRECTEMENT :
+  Thought: Je connais la réponse.
+  Final Answer: [ta réponse]
+- Ne génère JAMAIS une Observation toi-même, attends toujours le résultat réel de l'outil
+- Après chaque Observation, écris soit une nouvelle Action, soit la Final Answer
 
 Historique de conversation :
 {chat_history}
@@ -467,43 +426,41 @@ agent_executor = AgentExecutor(
     agent=agent,
     tools=tools,
     memory=memory,
-    verbose=True,           # Affiche le raisonnement étape par étape
+    verbose=True,
     handle_parsing_errors=True,
-    max_iterations=6,       # Évite les boucles infinies
+    max_iterations=10,
+    max_execution_time=30,
     return_intermediate_steps=False,
+    early_stopping_method="generate",
 )
 
 # ---------------------------------------------------------------------------
-# Fonction principale — appelée par main.py et chainlit_app.py
+# Fonction principale — avec retry automatique sur rate limit
 # ---------------------------------------------------------------------------
 
 def ask_agent(question: str) -> str:
-    """
-    Point d'entrée principal de l'agent.
-    
-    Args:
-        question: La question posée par l'utilisateur (en langage naturel).
-    
-    Returns:
-        La réponse de l'agent sous forme de chaîne de caractères.
-    
-    Exemple d'utilisation :
-        >>> from app.agents import ask_agent
-        >>> print(ask_agent("Quel est mon IMC si je pèse 80kg pour 1m75 ?"))
-        >>> print(ask_agent("Quelle est la météo à Paris ?"))
-        >>> print(ask_agent("Quelles sont les dernières recommandations sur le diabète ?"))
-    """
     if not question or not question.strip():
         return "Bonjour ! Comment puis-je vous aider aujourd'hui ?"
 
-    try:
-        result = agent_executor.invoke({"input": question.strip()})
-        return result.get("output", "Je n'ai pas pu générer de réponse.")
-    except Exception as e:
-        return (
-            f"⚠️ Une erreur s'est produite lors du traitement de votre question : {e}\n"
-            "Veuillez reformuler ou réessayer."
-        )
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            result = agent_executor.invoke({"input": question.strip()})
+            return result.get("output", "Je n'ai pas pu générer de réponse.")
+        except Exception as e:
+            error_str = str(e)
+            # ✅ Rate limit → attendre et réessayer
+            if "429" in error_str or "rate_limited" in error_str:
+                wait_time = (attempt + 1) * 5  # 5s, 10s, 15s
+                print(f"⏳ Rate limit atteint, attente {wait_time}s...")
+                time.sleep(wait_time)
+                continue
+            return (
+                f"⚠️ Une erreur s'est produite : {e}\n"
+                "Veuillez reformuler ou réessayer."
+            )
+
+    return "⚠️ Limite de requêtes atteinte. Attendez quelques secondes et réessayez."
 
 
 # ---------------------------------------------------------------------------
