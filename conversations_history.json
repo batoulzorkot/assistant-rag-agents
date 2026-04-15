@@ -210,5 +210,9 @@
   {
     "question": "Calcule mon IMC : je pèse 70kg et je mesure 1m65",
     "response": "⚠️ Une erreur s'est produite : Error response 503 while fetching https://api.mistral.ai/v1/chat/completions: {\"object\":\"error\",\"message\":\"Internal server error\",\"type\":\"unreachable_backend\",\"param\":null,\"code\":\"1100\",\"raw_status_code\":503}\nVeuillez reformuler ou réessayer."
+  },
+  {
+    "question": "Bonjour ! Tu es qui ?",
+    "response": "Bonjour ! 😊 Je suis un grand modèle de langage créé par Mistral AI. Je suis là pour t'aider avec tes questions, te donner des informations ou simplement discuter. Comment puis-je t'aider aujourd'hui ?"
   }
 ]
