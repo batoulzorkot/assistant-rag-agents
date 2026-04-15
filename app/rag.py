@@ -1,118 +1,174 @@
-import os
-import json
-import numpy as np
+#!/usr/bin/env python
+"""
+rag.py — Script RAG minimal
+Utilise Mistral + FAISS + LangChain
+"""
+
+from __future__ import annotations
+import os, json, textwrap
 from pathlib import Path
+
+import faiss, numpy as np
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from pypdf import PdfReader
+from tqdm.auto import tqdm
 from dotenv import load_dotenv
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
-import faiss
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_mistralai import MistralAIEmbeddings
+from langchain_mistralai.chat_models import ChatMistralAI
 
 load_dotenv()
 
+# ─────────────────────────── Config ──────────────────────────────
+DOCS_DIR      = Path("docs")
+CHUNK_SIZE    = 800
+CHUNK_OVERLAP = 150
+TOP_K         = 4
+FAISS_INDEX   = "faiss.index"
+FAISS_META    = "faiss.index.meta.json"
+
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-DOCS_DIR = Path("docs")
-INDEX_FILE = "faiss.index"
-META_FILE = "faiss.index.meta.json"
 
-client = MistralClient(api_key=MISTRAL_API_KEY)
+SYSTEM_PROMPT = (
+    "Tu es un assistant médical précis et concis spécialisé dans le diabète, "
+    "l'hypertension et le cholestérol. "
+    "Réponds UNIQUEMENT à partir du contexte fourni. "
+    "Si la réponse est absente, dis 'Je ne sais pas.'"
+)
 
-# ─── 1. Lecture des PDFs ───────────────────────────────────────
-def load_texts():
-    texts = []
-    for pdf in DOCS_DIR.rglob("*.pdf"):
-        try:
-            loader = PyPDFLoader(str(pdf))
-            pages = loader.load()
-            for page in pages:
-                if page.page_content.strip():
-                    texts.append({
-                        "text": page.page_content.strip(),
-                        "source": pdf.name
-                    })
-        except Exception as e:
-            print(f"❌ {pdf.name} — {e}")
-    print(f"✅ {len(texts)} pages chargées")
-    return texts
+# ─────────────────────────────────────────────────────────────────
 
-# ─── 2. Embeddings ─────────────────────────────────────────────
-def get_embedding(text: str):
-    response = client.embeddings(
-        model="mistral-embed",
-        input=[text]
+# 1️⃣ Chargement & découpage
+def read_pdf_text(path: Path) -> str:
+    try:
+        reader = PdfReader(str(path))
+        pages_text = []
+        for page in reader.pages:
+            try:
+                text = page.extract_text()
+                if text:
+                    pages_text.append(text)
+            except Exception:
+                pass  # ✅ ignore les pages corrompues
+        return "\n".join(pages_text)
+    except Exception as e:
+        print(f"⚠️ PDF ignoré ({path.name}) : {e}")
+        return ""
+
+def load_and_split() -> list[str]:
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP
     )
-    return response.data[0].embedding
+    chunks: list[str] = []
+    for path in DOCS_DIR.rglob("*"):
+        if path.suffix.lower() == ".txt":
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        elif path.suffix.lower() == ".pdf":
+            text = read_pdf_text(path)
+        else:
+            continue
+        if text.strip():
+            chunks.extend(splitter.split_text(text))
+    if not chunks:
+        raise RuntimeError(f"Aucun fichier .txt ou .pdf trouvé dans {DOCS_DIR}")
+    print(f"✅ {len(chunks)} chunks créés")
+    return chunks
 
-# ─── 3. Index FAISS ────────────────────────────────────────────
-def build_index(texts):
-    if Path(INDEX_FILE).exists():
-        print("✅ Index FAISS chargé")
-        index = faiss.read_index(INDEX_FILE)
-        with open(META_FILE, "r") as f:
-            metadata = json.load(f)
-        return index, metadata
+# 2️⃣ Embeddings Mistral
+def embed(texts: list[str]) -> list[list[float]]:
+    embedder = MistralAIEmbeddings(
+        api_key=MISTRAL_API_KEY,
+        model="mistral-embed"
+    )
+    return embedder.embed_documents(texts)
 
-    print("⏳ Création des embeddings...")
-    embeddings = []
-    metadata = []
-    for i, item in enumerate(texts):
-        emb = get_embedding(item["text"])
-        embeddings.append(emb)
-        metadata.append({
-            "text": item["text"],
-            "source": item["source"]
-        })
-        if i % 10 == 0:
-            print(f"  {i}/{len(texts)} chunks traités")
+# 3️⃣ FAISS store
+def get_faiss_store(chunks: list[str]):
+    if Path(FAISS_INDEX).exists() and Path(FAISS_META).exists():
+        print("✅ FAISS store chargé depuis le disque")
+        index = faiss.read_index(FAISS_INDEX)
+        chunks = json.loads(Path(FAISS_META).read_text())
+        return index, chunks
 
-    vectors = np.array(embeddings, dtype="float32")
-    index = faiss.IndexFlatL2(vectors.shape[1])
-    index.add(vectors)
-    faiss.write_index(index, INDEX_FILE)
-    with open(META_FILE, "w") as f:
-        json.dump(metadata, f, ensure_ascii=False)
-    print("✅ Index FAISS sauvegardé")
-    return index, metadata
+    print("⏳ Construction du vector store...")
+    all_vectors = []
+    for i in tqdm(range(0, len(chunks), 32), unit="batch"):
+        all_vectors.extend(embed(chunks[i:i+32]))
+    mat = np.asarray(all_vectors, dtype=np.float32)
 
-# ─── 4. Réponse ────────────────────────────────────────────────
-def ask(question: str, index, metadata):
-    query_emb = np.array([get_embedding(question)], dtype="float32")
-    _, indices = index.search(query_emb, k=3)
+    index = faiss.IndexFlatL2(mat.shape[1])
+    index.add(mat)
+    faiss.write_index(index, FAISS_INDEX)
+    Path(FAISS_META).write_text(json.dumps(chunks))
+    print("✅ FAISS store créé et sauvegardé")
+    return index, chunks
 
-    context = ""
-    sources = []
-    for i in indices[0]:
-        if i < len(metadata):
-            context += metadata[i]["text"] + "\n\n"
-            sources.append(metadata[i]["source"])
+# 4️⃣ Récupération
+def retrieve(query: str, index, chunks, k: int = TOP_K) -> list[str]:
+    embedder = MistralAIEmbeddings(
+        api_key=MISTRAL_API_KEY,
+        model="mistral-embed"
+    )
+    q_vec = np.asarray(
+        embedder.embed_query(query), dtype=np.float32
+    ).reshape(1, -1)
+    _, idxs = index.search(q_vec, k)
+    return [chunks[i] for i in idxs[0]]
 
-    response = client.chat(
+# 5️⃣ Prompt
+def build_user_prompt(question: str, ctx_chunks: list[str]) -> str:
+    context_block = "\n\n".join(
+        f"[Doc {i+1}]\n{chunk}" for i, chunk in enumerate(ctx_chunks)
+    )
+    return (
+        f"Contexte :\n{context_block}\n\n"
+        f"Question : {question}\nRéponse :"
+    )
+
+# 6️⃣ Boucle de chat
+def chat_loop(index, chunks):
+    llm = ChatMistralAI(
+        api_key=MISTRAL_API_KEY,
         model="mistral-small-latest",
-        messages=[
-            ChatMessage(
-                role="system",
-                content="Tu es un assistant médical. Réponds uniquement en te basant sur le contexte fourni."
-            ),
-            ChatMessage(
-                role="user",
-                content=f"Contexte:\n{context}\n\nQuestion: {question}"
-            )
-        ]
+        temperature=0.2
     )
+    history: list[dict] = []
 
-    answer = response.choices[0].message.content
-    citations = "\n\n📚 Sources : " + ", ".join(set(sources))
-    return answer + citations
-
-# ─── 5. Boucle CLI ─────────────────────────────────────────────
-if __name__ == "__main__":
-    texts = load_texts()
-    index, metadata = build_index(texts)
-
-    print("\n💬 Assistant RAG minimal prêt ! (tape 'exit' pour quitter)\n")
     while True:
-        question = input("Vous : ")
-        if question.lower() == "exit":
+        try:
+            q = input("\n💬 Question (Ctrl-C pour quitter) : ")
+        except KeyboardInterrupt:
+            print("\nAu revoir !")
             break
-        response = ask(question, index, metadata)
-        print(f"\nAssistant : {response}\n")
+
+        ctx = retrieve(q, index, chunks)
+        user_prompt = build_user_prompt(q, ctx)
+
+        messages = (
+            [{"role": "system", "content": SYSTEM_PROMPT}]
+            + history
+            + [{"role": "user", "content": user_prompt}]
+        )
+
+        print("\n🔍 Contexte récupéré :")
+        print("─" * 60)
+        for i, c in enumerate(ctx, 1):
+            print(textwrap.indent(textwrap.fill(c, width=88), f"[Doc {i}] "))
+        print("─" * 60)
+
+        response = llm.invoke(messages)
+        answer = response.content
+
+        print("\n🤖 Réponse :\n")
+        print(textwrap.fill(answer, width=88))
+
+        history.extend([
+            {"role": "user", "content": q},
+            {"role": "assistant", "content": answer},
+        ])
+
+# ─── Main ─────────────────────────────────────────────────────
+if __name__ == "__main__":
+    chunks = load_and_split()
+    index, chunks = get_faiss_store(chunks)
+    chat_loop(index, chunks)
