@@ -10,7 +10,6 @@ from langchain.memory import ConversationBufferMemory
 from rag_langchain import load_documents, split_documents, get_vectorstore, get_rag_chain, ask_rag
 from agents import ask_agent
 
-# ─── Initialisation LLM ───────────────────────────────────────
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 llm = ChatMistralAI(
@@ -19,13 +18,11 @@ llm = ChatMistralAI(
     temperature=0.2
 )
 
-# ─── Mémoire conversationnelle globale ────────────────────────
 memory = ConversationBufferMemory(
     memory_key="chat_history",
     return_messages=True
 )
 
-# ─── Chargement RAG au démarrage ──────────────────────────────
 print("🚀 Chargement du pipeline RAG...")
 docs = load_documents()
 chunks = split_documents(docs)
@@ -33,14 +30,18 @@ vectorstore = get_vectorstore(chunks)
 rag_chain = get_rag_chain(vectorstore)
 print("✅ Pipeline RAG prêt !")
 
-# ─── Mots clés routeur ────────────────────────────────────────
+# ✅ Garde en mémoire le dernier sujet RAG
+last_rag_topic = {"question": ""}
+
 RAG_KEYWORDS = [
     "diabète", "diabete", "glycémie", "glycemie", "insuline",
     "hypertension", "tension", "pression artérielle",
     "cholestérol", "cholesterol", "ldl", "hdl", "triglycérides",
     "cardiovasculaire", "traitement", "symptôme", "symptome",
     "prévention", "prevention", "obésité", "obese",
-    "document", "selon", "d'après", "oms"
+    "document", "selon", "d'après", "oms",
+    "causes", "cause", "risque", "risques", "facteur",
+    "complication", "complications", "diagnostic"
 ]
 
 AGENT_KEYWORDS = [
@@ -59,19 +60,35 @@ CONVERSATION_KEYWORDS = [
     "conversation précédente", "precedente"
 ]
 
-# ─── Chargement historique dans mémoire ───────────────────────
+SUIVI_PREFIXES = [
+    "et quelles", "et quel", "et comment", "et pourquoi",
+    "et les", "et le", "et la", "et quoi", "et est",
+    "et y a", "et qu", "et c'est", "et ça",
+    "suite", "continue", "précise", "détaille",
+    "plus de détail", "dis m'en plus", "approfondis"
+]
+
 def load_history_into_memory(history: list):
-    """Charge les conversations passées dans la mémoire LangChain"""
     for item in history[-5:]:
         memory.chat_memory.add_user_message(item["question"])
         memory.chat_memory.add_ai_message(item["response"])
     print(f"✅ {min(len(history), 5)} conversations chargées en mémoire")
 
-# ─── Routeur intelligent ──────────────────────────────────────
 def router(question: str) -> str:
-    question_lower = question.lower()
+    question_lower = question.lower().strip()
 
-    # 0 — Conversation générale → LLM direct en priorité
+    # 0 — Question de suivi → enrichir avec le dernier sujet RAG
+    if any(question_lower.startswith(prefix) for prefix in SUIVI_PREFIXES):
+        print("📚 Routage → RAG (question de suivi)")
+        # ✅ Si on a un sujet précédent, on l'ajoute à la question
+        if last_rag_topic["question"]:
+            enriched = f"{question} (contexte : {last_rag_topic['question']})"
+            print(f"🔗 Question enrichie : {enriched}")
+        else:
+            enriched = question
+        return ask_rag(enriched, rag_chain)
+
+    # 1 — Conversation générale → LLM direct
     if any(kw in question_lower for kw in CONVERSATION_KEYWORDS):
         print("💬 Routage → LLM direct")
         memory.chat_memory.add_user_message(question)
@@ -80,17 +97,19 @@ def router(question: str) -> str:
         memory.chat_memory.add_ai_message(answer)
         return answer
 
-    # 1 — Outil → Agent
+    # 2 — Outil → Agent
     if any(kw in question_lower for kw in AGENT_KEYWORDS):
         print("🔧 Routage → Agent")
         return ask_agent(question)
 
-    # 2 — Documents → RAG
+    # 3 — Documents → RAG
     if any(kw in question_lower for kw in RAG_KEYWORDS):
         print("📚 Routage → RAG")
+        # ✅ Mémoriser le sujet
+        last_rag_topic["question"] = question
         return ask_rag(question, rag_chain)
 
-    # 3 — Défaut → LLM direct
+    # 4 — Défaut → LLM direct
     print("💬 Routage → LLM direct")
     memory.chat_memory.add_user_message(question)
     response = llm.invoke(question)
@@ -99,7 +118,6 @@ def router(question: str) -> str:
     return answer
 
 
-# ─── Boucle CLI de test ───────────────────────────────────────
 if __name__ == "__main__":
     print("\n💬 Assistant médical complet prêt ! (tape 'exit' pour quitter)\n")
     while True:
